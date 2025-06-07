@@ -409,6 +409,38 @@ h3 {
     box-shadow: 0 10px 25px rgba(213, 185, 123, 0.4);
 }
 
+/* LINE Button Specific Style */
+.btn-outline .fa-line,
+.btn-outline:has(.fa-line) {
+    background: #06C755;
+    color: white;
+    border: 2px solid #06C755;
+}
+
+.btn-outline .fa-line:hover,
+.btn-outline:has(.fa-line):hover {
+    background: #05A047;
+    border-color: #05A047;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(6, 199, 85, 0.4);
+}
+
+/* LINE Button - More specific targeting */
+.cta-buttons .btn-outline:nth-child(2),
+.btn-outline[href*="line"] {
+    background: #06C755;
+    color: white;
+    border: 2px solid #06C755;
+}
+
+.cta-buttons .btn-outline:nth-child(2):hover,
+.btn-outline[href*="line"]:hover {
+    background: #05A047;
+    border-color: #05A047;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(6, 199, 85, 0.4);
+}
+
 .scroll-indicator {
     position: absolute;
     bottom: 2rem;
@@ -667,8 +699,8 @@ h3 {
 
 .features-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 3rem;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
 }
 
 .feature-card {
@@ -744,6 +776,7 @@ h3 {
 .price {
     padding: 8rem 0;
     background: #F8F5F0;
+    text-align: center;
 }
 
 .price-tabs {
@@ -785,6 +818,7 @@ h3 {
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
     margin-bottom: 3rem;
+    text-align: left;
 }
 
 .price-card {
@@ -876,9 +910,20 @@ h3 {
     color: white;
     padding: 1.5rem 2rem;
     border-radius: 50px;
-    display: inline-block;
-    margin: 0 auto;
+    display: block;
+    margin: 3rem auto 0;
     box-shadow: 0 5px 20px rgba(203, 180, 212, 0.3);
+    width: fit-content;
+    max-width: 90%;
+}
+
+/* Campaign banner container for better centering */
+.price .container {
+    text-align: center;
+}
+
+.price .price-grid {
+    text-align: left;
 }
 
 .campaign-text {
@@ -1309,7 +1354,11 @@ h3 {
         justify-content: center;
     }
     
-    .features-grid,
+    .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+    
     .price-grid,
     .staff-grid {
         grid-template-columns: 1fr;
@@ -1372,6 +1421,11 @@ h3 {
     
     .pain-grid {
         grid-template-columns: 1fr;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
     }
     
     .price-tabs {
