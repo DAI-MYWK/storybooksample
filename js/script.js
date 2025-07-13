@@ -1,12 +1,14 @@
 // DOM Content Loaded
 document.addEventListener("DOMContentLoaded", function () {
-  // Initialize AOS
-  AOS.init({
-    duration: 800,
-    easing: "ease-in-out",
-    once: true,
-    offset: 100,
-  });
+  // Initialize AOS if available
+  if (typeof AOS !== "undefined") {
+    AOS.init({
+      duration: 800,
+      easing: "ease-in-out",
+      once: true,
+      offset: 100,
+    });
+  }
 
   // Initialize all components
   initNavigation();
@@ -456,64 +458,81 @@ function optimizePerformance() {
 }
 
 // Initialize additional features when jQuery is available
-$(document).ready(function () {
-  // Initialize Magnific Popup for staff images
-  $(".staff-image").magnificPopup({
-    type: "image",
-    gallery: {
-      enabled: true,
-    },
-    zoom: {
-      enabled: true,
-      duration: 300,
-    },
-  });
+function initJQueryFeatures() {
+  if (typeof $ !== "undefined") {
+    $(document).ready(function () {
+      // Initialize Magnific Popup for staff images
+      $(".staff-image").magnificPopup({
+        type: "image",
+        gallery: {
+          enabled: true,
+        },
+        zoom: {
+          enabled: true,
+          duration: 300,
+        },
+      });
 
-  // Initialize testimonials slider
-  initTestimonialsSlider();
+      // Initialize testimonials slider
+      initTestimonialsSlider();
 
-  // Smooth scrolling for all anchor links
-  $('a[href*="#"]')
-    .not('[href="#"]')
-    .not('[href="#0"]')
-    .click(function (event) {
-      if (
-        location.pathname.replace(/^\//, "") ==
-          this.pathname.replace(/^\//, "") &&
-        location.hostname == this.hostname
-      ) {
-        var target = $(this.hash);
-        target = target.length
-          ? target
-          : $("[name=" + this.hash.slice(1) + "]");
-        if (target.length) {
-          event.preventDefault();
-          $("html, body").animate(
-            {
-              scrollTop: target.offset().top - 80,
-            },
-            1000,
-            function () {
-              var $target = $(target);
-              $target.focus();
-              if ($target.is(":focus")) {
-                return false;
-              } else {
-                $target.attr("tabindex", "-1");
-                $target.focus();
-              }
+      // Smooth scrolling for all anchor links
+      $('a[href*="#"]')
+        .not('[href="#"]')
+        .not('[href="#0"]')
+        .click(function (event) {
+          if (
+            location.pathname.replace(/^\//, "") ==
+              this.pathname.replace(/^\//, "") &&
+            location.hostname == this.hostname
+          ) {
+            var target = $(this.hash);
+            target = target.length
+              ? target
+              : $("[name=" + this.hash.slice(1) + "]");
+            if (target.length) {
+              event.preventDefault();
+              $("html, body").animate(
+                {
+                  scrollTop: target.offset().top - 80,
+                },
+                1000,
+                function () {
+                  var $target = $(target);
+                  $target.focus();
+                  if ($target.is(":focus")) {
+                    return false;
+                  } else {
+                    $target.attr("tabindex", "-1");
+                    $target.focus();
+                  }
+                }
+              );
             }
-          );
-        }
-      }
-    });
+          }
+        });
 
-  // Add loading animation
-  $("body").addClass("loading");
-  setTimeout(() => {
-    $("body").removeClass("loading");
-  }, 500);
-});
+      // Add loading animation
+      $("body").addClass("loading");
+      setTimeout(() => {
+        $("body").removeClass("loading");
+      }, 500);
+    });
+  }
+}
+
+// jQueryが読み込まれた後に実行
+if (typeof $ !== "undefined") {
+  initJQueryFeatures();
+} else {
+  // jQueryが読み込まれるまで待つ
+  const checkJQuery = setInterval(() => {
+    if (typeof $ !== "undefined") {
+      clearInterval(checkJQuery);
+      initJQueryFeatures();
+    }
+  }, 100);
+}
 
 // Error handling
 window.addEventListener("error", function (e) {
