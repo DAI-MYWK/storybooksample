@@ -19,7 +19,7 @@ export const Default = () => `
       <div class="staff-grid">
         <div class="staff-card" data-aos="zoom-in" data-aos-delay="100">
           <div class="staff-image">
-            <img src="./assets/images/men_staff01.png" alt="代表トレーナー" />
+            <img src="./images/men_staff01.png" alt="代表トレーナー" />
             <div class="staff-overlay">
               <div class="staff-social">
                 <a href="#"><i class="fab fa-instagram"></i></a>
@@ -39,7 +39,7 @@ export const Default = () => `
         <div class="staff-card" data-aos="zoom-in" data-aos-delay="200">
           <div class="staff-image">
             <img
-              src="./assets/images/woman_staff01.png"
+              src="./images/woman_staff01.png"
               alt="ピラティスインストラクター"
             />
             <div class="staff-overlay">
@@ -60,7 +60,7 @@ export const Default = () => `
 
         <div class="staff-card" data-aos="zoom-in" data-aos-delay="300">
           <div class="staff-image">
-            <img src="./assets/images/woman_staff02.png" alt="美容整体師" />
+            <img src="./images/woman_staff02.png" alt="美容整体師" />
             <div class="staff-overlay">
               <div class="staff-social">
                 <a href="#"><i class="fab fa-instagram"></i></a>

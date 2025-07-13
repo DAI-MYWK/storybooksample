@@ -17,17 +17,17 @@ export const Default = () => `
     <div class="hero-background">
       <div class="hero-image-container">
         <img
-          src="./assets/images/hero_community.png"
+          src="./images/hero_community.png"
           alt="コミュニティ"
           class="hero-image hero-image-3"
         />
         <img
-          src="./assets/images/hero_pilates.png"
+          src="./images/hero_pilates.png"
           alt="ピラティス"
           class="hero-image hero-image-2"
         />
         <img
-          src="./assets/images/kickboxing_mitt_training01.png"
+          src="./images/kickboxing_mitt_training01.png"
           alt="キックボクシング"
           class="hero-image hero-image-1"
         />

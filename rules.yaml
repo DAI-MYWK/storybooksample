@@ -87,6 +87,7 @@ storybook_setup:
         docs: {
           autodocs: "tag",
         },
+        staticDirs: ["../assets"],
       };
 
     preview.js: |
@@ -193,7 +194,7 @@ storybook_setup:
 
     画像やフォントなど:
       - `assets/images/` にまとめて配置
-      - `<img src="./assets/images/logo.png">` のように相対パスで指定する
+      - `<img src="./images/logo.png">` のように相対パスで指定する（staticDirs設定により./assetsが./になる）
       - Storybookでは webpack が public path を変えるので注意
 
     セクション追加手順:
@@ -256,8 +257,10 @@ storybook_setup:
       - script.js内でjQueryの存在確認を行う
 
     画像が表示されない場合:
-      - 画像パスが `./assets/images/` になっているか確認
+      - 画像パスが `./images/` になっているか確認（staticDirs設定により）
       - 画像ファイルがassetsフォルダに移動されているか確認
+      - main.jsに `staticDirs: ["../assets"]` が設定されているか確認
+      - Vercelデプロイ時は特に重要：staticDirs設定なしでは画像が表示されない
 
     CSSが適用されない場合:
       - preview.jsでCSSが正しく読み込まれているか確認

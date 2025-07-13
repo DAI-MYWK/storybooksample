@@ -43,17 +43,17 @@ export const Default = () => `
         <div class="about-images" data-aos="fade-left">
           <div class="image-stack">
             <img
-              src="./assets/images/studio01.png"
+              src="./images/studio01.png"
               alt="スタジオ内観"
               class="about-img about-img-1"
             />
             <img
-              src="./assets/images/entrance.png"
+              src="./images/entrance.png"
               alt="エントランス"
               class="about-img about-img-2"
             />
             <img
-              src="./assets/images/studio02.png"
+              src="./images/studio02.png"
               alt="設備"
               class="about-img about-img-3"
             />
