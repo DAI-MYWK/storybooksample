@@ -15,5 +15,5 @@ export default {
   docs: {
     autodocs: "tag",
   },
-  staticDirs: ["../assets"],
+  staticDirs: ["../assets", "../css", "../js"],
 };

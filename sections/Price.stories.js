@@ -1,11 +1,10 @@
 export default {
-  title: "Sections/Price",
+  title: "skc/Price",
   parameters: {
     layout: "fullscreen",
     docs: {
       description: {
-        component:
-          "料金案内セクション。月額プランと単発レッスンの料金を表示します。",
+        component: "料金プランを紹介するセクション。",
       },
     },
   },
@@ -13,7 +12,8 @@ export default {
 };
 
 export const Default = () => `
-  <section class="price" id="price">
+  <div class="skc">
+    <section class="price" id="price">
     <div class="container">
       <h2 class="section-title" data-aos="fade-up">料金案内</h2>
       <div class="price-tabs" data-aos="fade-up" data-aos-delay="200">
@@ -222,6 +222,7 @@ export const Default = () => `
       </div>
     </div>
   </section>
+  </div>
 `;
 
 Default.parameters = {

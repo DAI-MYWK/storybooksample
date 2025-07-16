@@ -1,0 +1,710 @@
+# Storybookファイル作成ルール
+# 元のデザインを保持しながら干渉回避してStorybookに追加する手順
+
+meta:
+  version: "1.1"
+  created_date: "2025-01-15"
+  updated_date: "2025-01-15"
+  purpose: "新しいファイルをStorybookに追加する際のルール"
+  principle: "元のデザインを保持しながら干渉回避"
+  based_on: "実際の統合作業で得られた知見"
+
+# =============================================================================
+# 基本方針
+# =============================================================================
+basic_policy:
+  design_preservation: "元のデザインを一切変更しない"
+  conflict_prevention: "既存のCSS・JavaScriptとの干渉を回避"
+  storybook_integration: "Storybookコンポーネントとして追加"
+  future_scalability: "今後の追加ファイルにも対応可能"
+  maintenance_friendly: "メンテナンスしやすい構造"
+
+# =============================================================================
+# ファイル追加時の手順
+# =============================================================================
+integration_process:
+  step_1_analysis:
+    description: "追加ファイルの分析"
+    tasks:
+      - "HTMLファイルの構造確認"
+      - "CSSファイルのクラス名・セレクタ確認"
+      - "JavaScriptファイルの関数名・変数名確認"
+      - "使用している画像・アセットの確認"
+      - "外部ライブラリの依存関係確認"
+      - "レスポンシブ対応の確認"
+
+  step_2_naming:
+    description: "コンポーネント名の決定"
+    rules:
+      pattern: "{origin}-{purpose}"
+      examples:
+        - "iroha-paint" # 塗装会社いろは
+        - "clinic-medical" # クリニック関連
+        - "shop-ecommerce" # ショップサイト
+        - "restaurant-casual" # レストラン
+
+    naming_criteria:
+      - "元のサイト名・プロジェクト名を含む"
+      - "業種・目的を表す"
+      - "短く覚えやすい"
+      - "英数字・ハイフンのみ使用"
+      - "既存のコンポーネント名と重複しない"
+
+  step_3_conflict_resolution:
+    description: "干渉回避の実装"
+    css_scoping:
+      method: "wrapper_class"
+      pattern: ".{component-name}"
+      implementation: |
+        /* 元のCSS */
+        .hero { ... }
+        .container { ... }
+        body { ... }
+
+        /* 干渉回避後 */
+        .iroha-paint .hero { ... }
+        .iroha-paint .container { ... }
+        .iroha-paint { ... } /* bodyの代替 */
+
+    javascript_namespacing:
+      method: "object_wrapper"
+      pattern: "{ComponentName}"
+      implementation: |
+        // 元のJavaScript
+        function createPaintBrush() { ... }
+        const paintBrush = null;
+        let isActive = false;
+
+        // 干渉回避後
+        const IrohaPaint = {
+          paintBrush: null,
+          isActive: false,
+          
+          createPaintBrush() { ... },
+          
+          init() {
+            // 初期化処理
+            this.setupEventListeners();
+          },
+          
+          setupEventListeners() {
+            // イベントリスナーの設定
+          },
+          
+          destroy() {
+            // 破棄処理
+          }
+        };
+
+  step_4_file_creation:
+    description: "新しいファイルの作成"
+    file_structure:
+      story_file: "sections/{ComponentName}.stories.js"
+      css_file: "css/{component-name}.css"
+      js_file: "js/{component-name}.js"
+
+    creation_order:
+      1: "CSSファイルの作成とスコープ化"
+      2: "JavaScriptファイルの作成と名前空間化"
+      3: "Storybookファイルの作成"
+      4: "preview.jsの設定更新"
+
+  step_5_storybook_setup:
+    description: "Storybookへの統合設定"
+    preview_js_update:
+      location: ".storybook/preview.js"
+      css_import: "import '../css/{component-name}.css';"
+      js_import: "import '../js/{component-name}.js';"
+
+    story_template: |
+      export default {
+        title: "External/{ComponentName}",
+        parameters: {
+          layout: "fullscreen",
+          docs: {
+            description: {
+              component: "【元サイト名】から移植したコンポーネント。元のデザインを保持。"
+            }
+          }
+        },
+        tags: ["autodocs"]
+      };
+
+      export const Default = () => `
+        <div class="{component-name}">
+          <!-- 元のHTMLをそのまま貼り付け -->
+        </div>
+      `;
+
+      export const WithoutJS = () => `
+        <div class="{component-name}">
+          <!-- JavaScript無効時の表示確認用 -->
+        </div>
+      `;
+
+# =============================================================================
+# CSS干渉回避ルール
+# =============================================================================
+css_conflict_prevention:
+  scoping_method: "wrapper_class"
+  file_creation: "separate_css_file"
+
+  implementation_steps:
+    1: "元のCSSファイルをコピー"
+    2: "新しいファイル名で保存（css/{component-name}.css）"
+    3: "全てのセレクタに`.{component-name}`を前置"
+    4: "メディアクエリ内のセレクタも忘れずに変更"
+    5: "擬似要素・擬似クラスも適切に変更"
+    6: "bodyセレクタは`.{component-name}`に変更"
+
+  transformation_examples:
+    global_selectors:
+      before: "body { background: #fff; }"
+      after: ".iroha-paint { background: #fff; }"
+
+    class_selectors:
+      before: ".hero { padding: 2rem; }"
+      after: ".iroha-paint .hero { padding: 2rem; }"
+
+    id_selectors:
+      before: "#navbar { height: 60px; }"
+      after: ".iroha-paint #navbar { height: 60px; }"
+
+    element_selectors:
+      before: "h1 { font-size: 2rem; }"
+      after: ".iroha-paint h1 { font-size: 2rem; }"
+
+    pseudo_elements:
+      before: ".hero::before { content: ''; }"
+      after: ".iroha-paint .hero::before { content: ''; }"
+
+    media_queries:
+      before: |
+        @media (max-width: 768px) {
+          .hero { padding: 1rem; }
+        }
+      after: |
+        @media (max-width: 768px) {
+          .iroha-paint .hero { padding: 1rem; }
+        }
+
+    universal_selectors:
+      before: "* { box-sizing: border-box; }"
+      after: ".iroha-paint * { box-sizing: border-box; }"
+
+  special_cases:
+    font_imports:
+      action: "そのまま保持"
+      reason: "グローバルな設定のため"
+      example: "@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap');"
+
+    css_resets:
+      action: "スコープ内に限定"
+      example: |
+        .iroha-paint * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+    root_variables:
+      action: "コンポーネント内で再定義"
+      example: |
+        .iroha-paint {
+          --primary-color: #FFE600;
+          --secondary-color: #FF2D2D;
+          --accent-color: #0070FF;
+        }
+
+    keyframes:
+      action: "ユニークな名前に変更"
+      example: |
+        @keyframes iroha-paint-fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+# =============================================================================
+# JavaScript干渉回避ルール
+# =============================================================================
+javascript_conflict_prevention:
+  namespacing_method: "object_wrapper"
+  file_creation: "separate_js_file"
+
+  implementation_steps:
+    1: "元のJavaScriptファイルをコピー"
+    2: "新しいファイル名で保存（js/{component-name}.js）"
+    3: "全ての関数・変数をオブジェクト内に移動"
+    4: "グローバルイベントリスナーを調整"
+    5: "初期化関数を作成"
+    6: "エラーハンドリングを追加"
+
+  transformation_examples:
+    functions:
+      before: |
+        function createPaintBrush() {
+          // 処理
+        }
+      after: |
+        const IrohaPaint = {
+          createPaintBrush() {
+            // 処理
+          }
+        };
+
+    variables:
+      before: |
+        let paintBrush = null;
+        const colors = ['red', 'blue'];
+      after: |
+        const IrohaPaint = {
+          paintBrush: null,
+          colors: ['red', 'blue']
+        };
+
+    event_listeners:
+      before: |
+        document.addEventListener('click', handleClick);
+      after: |
+        const IrohaPaint = {
+          init() {
+            const container = document.querySelector('.iroha-paint');
+            if (container) {
+              container.addEventListener('click', this.handleClick.bind(this));
+            }
+          },
+          handleClick(e) {
+            // 処理
+          }
+        };
+
+    initialization_pattern:
+      template: |
+        const IrohaPaint = {
+          isInitialized: false,
+          
+          init() {
+            if (this.isInitialized) return;
+            
+            const container = document.querySelector('.iroha-paint');
+            if (!container) return;
+            
+            try {
+              this.setupEventListeners();
+              this.initializeComponents();
+              this.isInitialized = true;
+            } catch (error) {
+              console.error('IrohaPaint initialization error:', error);
+            }
+          },
+          
+          setupEventListeners() {
+            // イベントリスナーの設定
+          },
+          
+          initializeComponents() {
+            // コンポーネントの初期化
+          },
+          
+          destroy() {
+            // 破棄処理
+            this.isInitialized = false;
+          }
+        };
+
+        // Storybook用の初期化
+        setTimeout(() => {
+          if (document.querySelector('.iroha-paint')) {
+            IrohaPaint.init();
+          }
+        }, 100);
+
+        // ページの変更時に再初期化
+        if (typeof window !== 'undefined' && window.addEventListener) {
+          window.addEventListener('storybook-story-changed', () => {
+            setTimeout(() => {
+              if (document.querySelector('.iroha-paint')) {
+                IrohaPaint.init();
+              }
+            }, 100);
+          });
+        }
+
+# =============================================================================
+# HTML構造ルール
+# =============================================================================
+html_structure:
+  wrapper_requirement: "必須"
+  wrapper_class: "{component-name}"
+
+  structure_template: |
+    <div class="{component-name}">
+      <!-- 元のHTMLをそのまま貼り付け -->
+      <nav class="navbar">...</nav>
+      <section class="hero">...</section>
+      <section class="services">...</section>
+    </div>
+
+  asset_handling:
+    images:
+      - "元のパス構造を保持"
+      - "相対パスを確認・調整"
+      - "必要に応じてassets/フォルダに移動"
+      - "画像の最適化は行わない（元のまま）"
+
+    fonts:
+      - "Google Fontsの読み込みはそのまま"
+      - "ローカルフォントは適切に配置"
+      - "font-displayの設定を確認"
+
+    icons:
+      - "Font Awesome等の外部ライブラリは保持"
+      - "SVGアイコンは適切に配置"
+      - "アイコンフォントのCDN読み込みを確認"
+
+  accessibility:
+    - "altタグの確認"
+    - "aria属性の保持"
+    - "タブインデックスの確認"
+    - "キーボードナビゲーションの確認"
+
+# =============================================================================
+# Storybookファイル作成ルール
+# =============================================================================
+storybook_file_creation:
+  story_file_location: "sections/{ComponentName}.stories.js"
+
+  story_structure:
+    export_default:
+      title: "External/{ComponentName}"
+      parameters:
+        layout: "fullscreen"
+        docs:
+          description:
+            component: "【元サイト名】から移植したコンポーネント。元のデザインを保持。"
+      tags: ["autodocs"]
+
+    export_stories:
+      - name: "Default"
+        description: "デフォルトの表示"
+        template: |
+          export const Default = () => `
+            <div class="{component-name}">
+              <!-- 元のHTML -->
+            </div>
+          `;
+
+      - name: "WithoutJS"
+        description: "JavaScript無効時の表示"
+        template: |
+          export const WithoutJS = () => `
+            <div class="{component-name}">
+              <!-- JavaScript無効時のHTML -->
+            </div>
+          `;
+
+      - name: "MobileView"
+        description: "モバイル表示の確認"
+        parameters:
+          viewport:
+            defaultViewport: "mobile1"
+
+  preview_js_integration:
+    location: ".storybook/preview.js"
+    css_import: "import '../css/{component-name}.css';"
+    js_import: "import '../js/{component-name}.js';"
+
+    import_example: |
+      // 既存のインポート
+      import '../css/style.css';
+      import '../js/script.js';
+
+      // 新しいコンポーネント
+      import '../css/iroha-paint.css';
+      import '../js/iroha-paint.js';
+
+# =============================================================================
+# 品質チェックリスト
+# =============================================================================
+quality_checklist:
+  before_integration:
+    - "元ファイルの動作確認"
+    - "使用しているアセットの確認"
+    - "外部ライブラリの依存関係確認"
+    - "レスポンシブ対応の確認"
+    - "アクセシビリティの確認"
+    - "クロスブラウザ対応の確認"
+
+  during_integration:
+    - "CSSスコープ化の完全性確認"
+    - "JavaScript名前空間化の完全性確認"
+    - "HTMLラッパーの適切な配置"
+    - "アセットパスの正確性確認"
+
+  after_integration:
+    - "Storybookでの表示確認"
+    - "CSS干渉がないことの確認"
+    - "JavaScript干渉がないことの確認"
+    - "他のコンポーネントとの共存確認"
+    - "インタラクション動作の確認"
+    - "レスポンシブ対応の保持確認"
+    - "エラーコンソールの確認"
+
+  testing_points:
+    visual_testing:
+      - "デザインが元の通りに表示される"
+      - "色・フォント・レイアウトが正確"
+      - "画像・アイコンが正しく表示される"
+      - "レスポンシブ対応が保持されている"
+
+    functional_testing:
+      - "インタラクションが正常に動作する"
+      - "アニメーションが正しく動作する"
+      - "フォームの動作確認"
+      - "リンクの動作確認"
+
+    integration_testing:
+      - "他のStorybookコンポーネントに影響しない"
+      - "既存CSSとの干渉がない"
+      - "既存JavaScriptとの干渉がない"
+      - "ブラウザコンソールエラーがない"
+
+# =============================================================================
+# トラブルシューティング
+# =============================================================================
+troubleshooting:
+  common_issues:
+    css_not_applied:
+      symptoms: "スタイルが適用されない"
+      causes:
+        - "スコープ化が不完全"
+        - "CSSの読み込み順序"
+        - "セレクタの特異性不足"
+        - "preview.jsでのimport漏れ"
+      solutions:
+        - "全てのセレクタに`.{component-name}`が付いているか確認"
+        - "preview.jsでのCSS importを確認"
+        - "ブラウザの開発者ツールでCSS読み込みを確認"
+        - "セレクタの特異性を上げる"
+        - "!importantの使用（最終手段）"
+
+    javascript_errors:
+      symptoms: "JavaScriptエラーが発生"
+      causes:
+        - "名前空間化が不完全"
+        - "グローバル変数の競合"
+        - "イベントリスナーの重複"
+        - "初期化タイミングの問題"
+      solutions:
+        - "全ての関数・変数が名前空間内にあるか確認"
+        - "グローバルスコープへの影響を確認"
+        - "初期化タイミングの調整"
+        - "エラーハンドリングの追加"
+        - "console.logでのデバッグ"
+
+    assets_not_found:
+      symptoms: "画像やフォントが表示されない"
+      causes:
+        - "パス構造の相違"
+        - "ファイルの配置場所"
+        - "相対パスの基準点の違い"
+      solutions:
+        - "相対パスを絶対パスに変更"
+        - "assets/フォルダへの適切な配置"
+        - "ブラウザのネットワークタブで確認"
+        - "パス構造の再確認"
+
+    storybook_not_loading:
+      symptoms: "Storybookでコンポーネントが表示されない"
+      causes:
+        - "preview.jsの設定漏れ"
+        - "import文の誤り"
+        - "ファイルパスの間違い"
+      solutions:
+        - "preview.jsでのimport文を確認"
+        - "ファイルパスの正確性を確認"
+        - "Storybookの再起動"
+        - "ブラウザキャッシュのクリア"
+
+    responsive_issues:
+      symptoms: "レスポンシブ対応が効かない"
+      causes:
+        - "メディアクエリのスコープ化漏れ"
+        - "viewport設定の問題"
+        - "CSS優先度の問題"
+      solutions:
+        - "メディアクエリ内のセレクタを確認"
+        - "viewport設定を確認"
+        - "CSS優先度を調整"
+
+# =============================================================================
+# 実装例
+# =============================================================================
+implementation_example:
+  scenario: "塗装会社『いろは』のサイトをStorybookに追加"
+
+  original_files:
+    - "addfiles/index.html"
+    - "addfiles/style.css"
+    - "addfiles/script.js"
+
+  component_name: "iroha-paint"
+  component_class: "IrohaPaint"
+
+  output_files:
+    - "sections/IrohaPaint.stories.js"
+    - "css/iroha-paint.css"
+    - "js/iroha-paint.js"
+
+  transformation_preview:
+    css_before: |
+      body {
+        font-family: 'Noto Sans JP', sans-serif;
+        background: #fff;
+      }
+
+      .hero {
+        background: #FFE600;
+        padding: 6rem 0;
+        text-align: center;
+      }
+
+    css_after: |
+      .iroha-paint {
+        font-family: 'Noto Sans JP', sans-serif;
+        background: #fff;
+      }
+
+      .iroha-paint .hero {
+        background: #FFE600;
+        padding: 6rem 0;
+        text-align: center;
+      }
+
+    js_before: |
+      function createPaintBrush() {
+        const brushes = document.querySelectorAll('.paint-brush');
+        brushes.forEach(brush => {
+          brush.addEventListener('click', handleBrushClick);
+        });
+      }
+
+      function handleBrushClick(e) {
+        // 処理
+      }
+
+      document.addEventListener('DOMContentLoaded', function() {
+        createPaintBrush();
+      });
+
+    js_after: |
+      const IrohaPaint = {
+        isInitialized: false,
+        
+        createPaintBrush() {
+          const container = document.querySelector('.iroha-paint');
+          if (!container) return;
+          
+          const brushes = container.querySelectorAll('.paint-brush');
+          brushes.forEach(brush => {
+            brush.addEventListener('click', this.handleBrushClick.bind(this));
+          });
+        },
+        
+        handleBrushClick(e) {
+          // 処理
+        },
+        
+        init() {
+          if (this.isInitialized) return;
+          
+          const container = document.querySelector('.iroha-paint');
+          if (!container) return;
+          
+          try {
+            this.createPaintBrush();
+            this.isInitialized = true;
+          } catch (error) {
+            console.error('IrohaPaint initialization error:', error);
+          }
+        }
+      };
+
+      // Storybook用の初期化
+      setTimeout(() => {
+        if (document.querySelector('.iroha-paint')) {
+          IrohaPaint.init();
+        }
+      }, 100);
+
+    html_structure: |
+      <div class="iroha-paint">
+        <nav class="navbar">
+          <div class="container">
+            <h1 class="logo">いろは</h1>
+            <ul class="nav-menu">
+              <li><a href="#home">ホーム</a></li>
+              <li><a href="#services">サービス</a></li>
+              <li><a href="#contact">お問い合わせ</a></li>
+            </ul>
+          </div>
+        </nav>
+        
+        <section class="hero">
+          <div class="container">
+            <h2>プロの塗装で住まいを美しく</h2>
+            <p>確かな技術と丁寧な施工で、お客様の大切な住まいを守ります</p>
+            <a href="#contact" class="cta-button">お見積もり依頼</a>
+          </div>
+        </section>
+      </div>
+
+    preview_js_setup: |
+      // .storybook/preview.js
+      import '../css/style.css';
+      import '../js/script.js';
+
+      // 新しいコンポーネント
+      import '../css/iroha-paint.css';
+      import '../js/iroha-paint.js';
+
+# =============================================================================
+# 継続的改善
+# =============================================================================
+continuous_improvement:
+  feedback_collection:
+    - "実装時の問題点を記録"
+    - "解決方法を文書化"
+    - "ルールの改善点を特定"
+
+  rule_updates:
+    - "新しい問題と解決方法を追加"
+    - "より効率的な手順を反映"
+    - "ベストプラクティスを更新"
+
+  knowledge_sharing:
+    - "チーム内での知見共有"
+    - "成功事例の蓄積"
+    - "失敗事例からの学習"
+
+# =============================================================================
+# 参考資料
+# =============================================================================
+references:
+  storybook_documentation:
+    - "https://storybook.js.org/docs/"
+    - "Storybookのベストプラクティス"
+
+  css_scoping:
+    - "CSS Modulesの概念"
+    - "CSS-in-JSの手法"
+    - "BEM命名規則"
+
+  javascript_patterns:
+    - "名前空間パターン"
+    - "モジュールパターン"
+    - "初期化パターン"
+
+  accessibility:
+    - "WCAG 2.1ガイドライン"
+    - "アクセシビリティのベストプラクティス"
